@@ -1,0 +1,213 @@
+@import "base/classes";
+@import "base/reset";
+.mui-content {
+    background: #fff;
+    font-size: 0.26rem;
+    font-family: 'PingFang-SC-Regular';
+    color: #222;
+    height: 100%;
+    .detail-wrapper {
+        padding: 0 0.32rem;
+        border-bottom: 0.16rem solid #f5f5f5;
+        .header {
+            position: relative;
+            height: 1rem;
+            padding: 0.2rem 0;
+            .header-string {
+                position: absolute;
+                display: block;
+                width: 0.06rem;
+                height: 0.6rem;
+                top: 0.2rem;
+                left: -0.32rem;
+                @include bg-image('../img/H1');
+                background-size: 0.06rem 0.6rem;
+                background-repeat: no-repeat;
+            }
+            .header-tit {
+                margin-bottom: 0.1rem;
+                line-height: 0.26rem;
+            }
+            .header-tit .name {
+                display: inline-block;
+                margin-right: 0.16rem;
+                line-height: 0.26rem;
+            }
+            .header-tit .company {
+                display: inline-block;
+                line-height: 0.26rem;
+            }
+            .header-titb {
+                overflow: hidden;
+                .time {
+                    display: inline-block;
+                    float: left;
+                    line-height: 0.25rem;
+                    color: #666;
+                    font-size: 0.22rem;
+                }
+                .status {
+                    display: inline-block;
+                    line-height: 0.25rem;
+                    float: right;
+                    color: #0093ff;
+                    font-size: 0.22rem;
+                }
+            }
+        }
+        .header-b {
+            height: 0.6rem;
+            width: 5.76rem;
+            margin: 0 auto;
+            @include border-1px(#e6e6e6);
+            .type {
+                font-size: 0.22rem;
+                color: #444;
+                line-height: 0.6rem;
+                display: inline-block;
+                float: left;
+            }
+            .servNo {
+                font-size: 0.22rem;
+                color: #444;
+                line-height: 0.6rem;
+                display: inline-block;
+                float: right;
+            }
+        }
+        .info {
+            font-size: 0.28rem;
+            line-height: 0.44rem;
+            padding: 0.32rem 0;
+            img {
+                margin-top: 0.32rem;
+                width: 5.76rem;
+                height: 3.24rem;
+            }
+        }
+        .mess {
+            position: relative;
+            margin-bottom: 0.32rem;
+            .extMess {
+                width: 80%;
+            }
+            .moreExtMess {
+                position: absolute;
+                color: #0093ff;
+                top: 0;
+                right: 0;
+            }
+        }
+    }
+    .reply {
+        padding: 0 0.32rem;
+        position: relative;
+        .reply-string {
+            position: absolute;
+            display: block;
+            width: 0.06rem;
+            height: 0.44rem;
+            top: 0.22rem;
+            left: 0rem;
+            @include bg-image('../img/H2');
+            background-size: 0.06rem 0.44rem;
+            background-repeat: no-repeat;
+        }
+        .reply-header {
+            height: 0.88rem;
+            position: relative;
+            padding: 0.22rem 0;
+            font-size: 0.3rem;
+            color: #222;
+            line-height: 0.44rem;
+        }
+        ul.replyUl {
+            li.reply-content {
+                padding-bottom: 0.32rem;
+                @include border-1px(#e6e6e6);
+                &:last-child {
+                    @include border-none();
+                }
+                .reply-title {
+                    position: relative;
+                    height: 1rem;
+                    padding: 0.25rem 0;
+                    .reply-icon-fuwuqu {
+                        display: inline-block;
+                        float: left;
+                        margin-right: 0.16rem;
+                        width: 0.52rem;
+                        height: 0.52rem;
+                        background-size: 0.5rem;
+                        background-repeat: no-repeat;
+                        @include bg-image('../img/icon_fuwuqu');
+                    }
+                    .reply-icon-me {
+                        display: inline-block;
+                        float: left;
+                        margin-right: 0.16rem;
+                        width: 0.52rem;
+                        height: 0.52rem;
+                        background-size: 0.5rem;
+                        background-repeat: no-repeat;
+                        @include bg-image('../img/icon_me');
+                    }
+                    .titName {
+                        display: inline-block;
+                        color: #222;
+                        width: 60%;
+                        line-height: 0.26rem;
+                        margin-bottom: 0.08rem;
+                        float: left;
+                    }
+                    .time {
+                        display: inline-block;
+                        color: #666;
+                        font-size: 0.22rem;
+                        line-height: 0.22rem;
+                        float: left;
+                    }
+                    .floor {
+                        display: inline-block;
+                        position: absolute;
+                        top: 0.25rem;
+                        right: 0;
+                    }
+                }
+                .reply-info {
+                    line-height: 0.36rem;
+                    img {
+                        margin-top: 0.32rem;
+                        width: 5.76rem;
+                        height: 3.24rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.finish {
+    padding: 0.32rem 0;
+    background: #F5F5F5;
+    span {
+        font-size: 0.26rem;
+        display: block;
+        color: #999;
+        text-align: center;
+        margin: 0 auto;
+        line-height: 0.26rem;
+        margin-bottom: 0.32rem;
+    }
+    .finish-btn {
+        margin: 0 auto;
+        width: 1.6rem;
+        height: 0.64rem;
+        border: 0.02rem #0093ff solid;
+        border-radius: 0.32rem;
+        font-size: 0.28rem;
+        color: #0093FF;
+        text-align: center;
+        line-height: 0.64rem;
+    }
+}

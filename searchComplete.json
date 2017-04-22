@@ -1,0 +1,17 @@
+{
+	"request":{
+		"keywords":""
+	},
+    "response": {
+        "responseHeader": {
+            "serviceCode": "QASSearchComplete",
+            "returnStatus": "1",
+            "returnCode": "1",
+            "conversationId": "9017ac4d892f4cb3dbbbb7df33de4904",
+            "systemDate": "20160812104605"
+        },
+        "responseBody": {
+            "completeList":["关键字1","关键字2","关键字3","关键字4","关键字5"]
+        }
+    }
+}

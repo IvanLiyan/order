@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>问题详情</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="AES/tripledes.js"></script>
+	<script src="AES/mode-ecb.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src='js/jquery.min.js'></script>
+	<script src="js/rem.js"></script>
+	<script src="js/sysdict.js"></script>
+	<link rel="stylesheet" type="text/css" href="../app/css/mui.min.css" />
+	<link rel="stylesheet" type="text/css" href="../app/css/detail.css" />
+</head>
+<body>
+	 <div class="mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<div class="mui-content">
+				<div class="detail-wrapper">
+					<div class="header"></div>
+		    		<div class="header-b"></div>
+		    		<div class="info"></div>
+		    		<div class="mess"></div>
+				</div>
+	    		<div class="reply">
+	    			<div class="replyHeader"></div>
+	    			<ul class="replyUl"></ul>
+	    		</div>
+			</div>
+			<div class="finish">
+    			<span>问题得到解决？</span>
+    			<div class="finish-btn">结束提问</div>
+    		</div>
+		</div>
+	</div>
+    
+    <script type="text/javascript">
+    	/*初始滚动条*/
+		mui('.mui-scroll-wrapper').scroll({
+			scrollY: true, //是否竖向滚动
+			 scrollX: false, //是否横向滚动
+			 startX: 0, //初始化时滚动至x
+			 startY: 0, //初始化时滚动至y
+			 indicators: true, //是否显示滚动条
+			 deceleration:0.0006, //阻尼系数,系数越小滑动越灵敏
+			 bounce: true //是否启用回弹
+		});
+    	
+    	/*初始各种全局变量*/
+    	var urlObj = urlParse(); //url参数对象
+    	var userId = urlObj.eid; //用户id
+		var ordNo  = urlObj.workOrdNo; //订单编号
+		var replyUlStr = '';
+		var replyAutoStr = '';
+		var floor;
+		var autoFloor;
+		var authorId;
+		var handlerId;
+		var status;
+		var level;
+		var replyCount;
+		var showCount;
+		var lastReply;
+		var stateChange;
+		var options = { // 配置options
+			header: {
+				"serviceCode": "QASQueryWODetail",
+				"transCode": "TC002001"
+			},
+			body: {
+				"workOrdNo": ordNo
+			}
+		};
+		
+//		alert(userId+'id');
+//		alert(ordNo+'no');
+		request('http://192.168.1.33:8080/gulp/detail.json',options, function(back) {
+			console.log(back);
+			authorId = back.authorId;
+			handlerId = back.handlerId;
+			status = back.workOrdStatus;
+			level = back.workOrdLevel;
+			replyCount = back.replayCount;
+			showCount =replyCount;
+			lastReply = back.lastReplyType;
+			stateChange = back.workOrdStateChange;
+			
+			/*拼接header*/
+			var headerStr = '';
+			headerStr += '<i class="header-string"></i>'+
+	    			'<div class="header-tit">'+
+	    				'<span class="name">'+hideName(back.authorName,userId,back.authorId,back.handlerId)+'</span>'+
+	    				'<span class="company">'+back.authorCompany+'</span>'+
+	    			'</div>'+
+	    			'<div class="header-titb">'+
+	    				'<span class="time">'+timeFormat(back.submitTime)+'</span>'+
+	    				'<span class="status">'+findDic('workOrdStatus',back.workOrdStatus)+'</span>'+
+	    			'</div>'
+			$('.header').html(headerStr);
+			
+			/*拼接headerb*/
+			var headerbStr = '';
+			headerbStr += '<span class="type">'+back.workOrdServName+'</span><span class="servNo">问题编号：'+back.workOrdServNo+'</span>'
+			$('.header-b').html(headerbStr);
+			
+			/*拼接info*/
+			var infoStr = '';
+			infoStr += '<div>'+back.workOrdInfo+'</div>';
+			$('.info').html(infoStr);
+			
+			/*拼接mess*/
+			var messStr = '';
+			if(back.elementList.length !== 0){
+				for( var i =0; i<back.elementList.length; i++){
+					messStr += '<div class="eleMess" data-isSecurite='+back.elementList[i].isSecurite+'>'+back.elementList[i].elementName+':'+back.elementList[i].elementValue+'</div>'
+				}
+				$('.mess').html(messStr);
+				if(userId !== authorId && userId !== handlerId){
+					$('.eleMess[data-isSecurite= "1"]').remove();
+				}
+			}else if(back.workOrdExtraList.length !== 0){
+				for( var j =0; j<back.workOrdExtraList.length; j++){
+					messStr += '<div class="extMess">'+back.workOrdExtraList[j]+'</div>'
+				}
+				if(back.extraCount > 3){
+					messStr += '<div class="moreExtMess">更多数据</div>'
+				}
+				$('.mess').html(messStr);
+			}else{
+				$('.mess').remove();
+			};
+			
+			/*拼接回复数*/
+			var replyHeaderStr = '';
+			if(showCount == 0 || ((status === '03'|| status === '02') && lastReply === '01') || ((stateChange ==='01' || stateChange ==="02") && status === '04') || status === '05'){
+				showCount ++;
+			}
+			replyHeaderStr += '<i class="reply-string"></i><div class="reply-header">回复('+showCount+')</div>';
+			$('.replyHeader').html(replyHeaderStr);
+		})
+		
+		request('http://192.168.1.33:8080/gulp/reply.json',options, function(back) {
+			console.log(back);
+			
+			/*拼接回复信息*/
+			if (replyCount != 0){
+				for( var i = 0;i < back.replyList.length;i ++){
+					var res = back.replyList[i];
+					var floor = i+1;
+					var autoFloor = i+2;
+					replyUlStr += '<li class="reply-content">'+
+					    				'<div class="reply-title">'+
+						    				'<i class="'+changeIcon(res.replyCustType)+'"></i>'+
+						    				'<span class="titName">'+replyName(res.replyCustType,userId,authorId,handlerId)+'</span>'+
+						    				'<span class="time">'+timeFormat(res.replyTime)+'</span>'+
+						    				'<span class="floor">'+floor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+res.replyInfo+'</div>'+
+					    			'</li>';
+				};
+				if((status === '03'||status === '02') && replyCount > 0 && level === '01' && lastReply === '01'){
+					replyAutoStr = '<li class="reply-content">'+
+										'<div class="reply-title">'+
+						    				'<i class="reply-icon-fuwuqu"></i>'+
+						    				'<span class="titName">服务区</span>'+
+						    				'<span class="time">'+getTime()+'</span>'+
+						    				'<span class="floor">'+autoFloor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+
+						    				'您好，我们的工作人员会在48小时内给您答复。'+
+					    				'</div>'+
+									'</li>';
+				}else if((status === '03'||status === '02') && replyCount > 0 && level === '02' && lastReply === '01'){
+					replyAutoStr = '<li class="reply-content">'+
+										'<div class="reply-title">'+
+						    				'<i class="reply-icon-fuwuqu"></i>'+
+						    				'<span class="titName">服务区</span>'+
+						    				'<span class="time">'+getTime()+'</span>'+
+						    				'<span class="floor">'+autoFloor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+
+						    				'您好，我们的工作人员会在6小时内给您答复。'+
+					    				'</div>'+
+									'</li>';
+				}else if(status === '04' && stateChange === '02'){
+					replyAutoStr = '<li class="reply-content">'+
+										'<div class="reply-title">'+
+						    				'<i class="reply-icon-fuwuqu"></i>'+
+						    				'<span class="titName">服务区</span>'+
+						    				'<span class="time">'+getTime()+'</span>'+
+						    				'<span class="floor">'+autoFloor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+
+						    				'您好，问题长时间没有回复，已默认关闭，如果您的问题仍未解决可以再次提问。'+
+					    				'</div>'+
+									'</li>';
+				}else if(status === '04' && stateChange === '01'){
+					replyAutoStr = '<li class="reply-content">'+
+										'<div class="reply-title">'+
+						    				'<i class="reply-icon-fuwuqu"></i>'+
+						    				'<span class="titName">服务区</span>'+
+						    				'<span class="time">'+getTime()+'</span>'+
+						    				'<span class="floor">'+autoFloor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+
+						    				'您好，问题已关闭，很高兴为您服务。'+
+					    				'</div>'+
+									'</li>';
+				}else if(status === '05'){
+					replyAutoStr = '<li class="reply-content">'+
+										'<div class="reply-title">'+
+						    				'<i class="reply-icon-fuwuqu"></i>'+
+						    				'<span class="titName">服务区</span>'+
+						    				'<span class="time">'+getTime()+'</span>'+
+						    				'<span class="floor">'+autoFloor+'楼</span>'+
+						    			'</div>'+
+						    			'<div class="reply-info">'+
+						    				'您好，问题已撤销，如果您的问题仍未解决可以再次提问。'+
+					    				'</div>'+
+									'</li>';
+				}
+			}else if((status === '01'||status === '02') && replyCount === '0' && level === '01'){
+				replyAutoStr = '<li class="reply-content">'+
+									'<div class="reply-title">'+
+					    				'<i class="reply-icon-fuwuqu"></i>'+
+					    				'<span class="titName">服务区</span>'+
+					    				'<span class="time">'+getTime()+'</span>'+
+					    				'<span class="floor">1楼</span>'+
+					    			'</div>'+
+					    			'<div class="reply-info">'+
+					    				'您好，我们的工作人员会在48小时内给您答复，请耐心等待。紧急问题，可以申请加急，加急后工作人员会在6小时内给您答复。'+
+				    				'</div>'+
+								'</li>';
+			}else if((status === '01'||status === '02') && replyCount === '0' && level === '02'){
+				replyAutoStr = '<li class="reply-content">'+
+									'<div class="reply-title">'+
+					    				'<i class="reply-icon-fuwuqu"></i>'+
+					    				'<span class="titName">服务区</span>'+
+					    				'<span class="time">'+getTime()+'</span>'+
+					    				'<span class="floor">1楼</span>'+
+					    			'</div>'+
+					    			'<div class="reply-info">'+
+					    				'您好，我们的工作人员会在6小时内给您答复。'+
+				    				'</div>'+
+								'</li>';
+			}
+			
+			replyUlStr += replyAutoStr;
+			$('.replyUl').html(replyUlStr);
+		})
+		
+		/*隐藏名字*/
+		function hideName(name,userId,authorId,handlerId){
+			var length = name.length;
+			var last = name.slice(-1);
+			var newName = '';
+			if(userId === authorId || userId === handlerId){
+				return name;
+			}else{
+				if(length === '2'){
+					newName = '*'+last;
+				}else{
+					newName = '**'+last;
+				}
+				return newName;
+			}
+		}
+		
+		/*修改图标*/
+		function changeIcon(custType){
+			if(custType === '01'){
+				return 'reply-icon-me';
+			}else{
+				return 'reply-icon-fuwuqu';
+			}
+		}
+		
+		/*显示回复名*/
+		function replyName(custType,userId,authorId,handlerId){
+			if(custType === '01' && userId === authorId){
+				$('.replyUl').find('i').prop('class','reply-icon-me');
+				return '我';
+			}else if(custType === '01' && userId !== authorId){
+				return '用户';
+			}else if(custType === '02'){
+				return '服务区';
+			}
+		}
+		
+		/*格式化时间*/
+		function timeFormat(data){
+			var yyyy = data.substr(0,4);
+			var MM = data.substring(4,6);
+			var dd = data.substring(6,8);
+			var HH = data.substring(8,10);
+			var mm = data.substring(10,12);
+			var timeStr = yyyy+'年'+MM+'月'+dd+'日 '+HH+':'+mm;
+			return timeStr;
+		}
+		
+		/*获取当前时间*/
+		function getTime(){
+			var now = new Date(); // 获取当前系统时间
+            var y = now.getFullYear();// 获取到年月日时分秒
+            var M = now.getMonth()+1; // 0 -- 11
+            var d = now.getDate();
+            var h = now.getHours();
+            var m = now.getMinutes();
+            var timerStr = y+adjust(M)+adjust(d)+adjust(h)+adjust(m);
+            function adjust(num){
+	            if(num < 10){
+	                return "0" + num;
+	            }
+	            return "" + num;
+        	}
+            return timeFormat(timerStr);
+		}
+		
+		/*截取url参数*/
+		function urlParse() {
+		    var url = window.location.search;  /*通过window.location.search来获取url*/
+            var obj = {};
+            var reg = /[?&][^?&]+=[^?&]+/g;  /* 匹配结果：[?][id]=[12345] 为一个 */
+            var arr = url.match(reg);  /*用url.match方法传入正则去匹配，返回一个数组，['?id=12345','&a=b'] */
+		    if (arr) {
+			    arr.forEach(function(item){ /*捕获到上个数组后，继续拆分*/
+                    var tempArr = item.substring(1).split('=');  /*去掉？再通过=号分割成新数组，['id','12345'] */
+					var key = decodeURIComponent(tempArr[0]);
+					var val = decodeURIComponent(tempArr[1]);
+			       obj[key] = val;  /*将取到的key和val配到对象Obj中*/
+			    });
+		    }
+		  	return obj;
+		};
+
+		
+		/*字典查询*/
+		function findDic(word,mykey){
+			for(var i in sysdictData){
+				if(i == word){
+					for(var j = 0;j < i.length;j ++){
+						if(sysdictData[i][j].key == mykey){
+							return sysdictData[i][j].value;
+						}
+					}
+				}
+			}
+		}
+		
+    </script>
+</body>
+</html>
+	
+
+<!--{"elementName":"要素名称1","elementValue":"要素信息1要素信息1","isSecurite":"0"},
+{"elementName":"要素名称2","elementValue":"要素信息2要素信息2要素信息2","isSecurite":"0"},
+{"elementName":"要素名称3","elementValue":"要素信息3要素信息3要素信息3要素信息3","isSecurite":"1"}
+
+"附加信息1附加信息1",
+"附加信息2附加信息2附加信息2",
+"附加信息3附加信息3附加信息3" -->

@@ -1,0 +1,37 @@
+{
+	"request":{
+		"workOrdNo":"110"
+	},
+    "response": {
+        "responseHeader": {
+            "serviceCode": "QASQueryWOReplyRecord",
+            "returnStatus": "1",
+            "returnCode": "1",
+            "conversationId": "9017ac4d892f4cb3dbbbb7df33de4904",
+            "systemDate": "20160812104605"
+        },
+        "responseBody": {
+            "replyList":[
+            {
+            	"replyCustType":"02",
+            	"replyInfo":"您好，申请加急成功。</br>我们的工作人员会在6小时内给您答复，请耐心等待。",
+            	"replyTime":"201703131830"
+            },
+            {
+            	"replyCustType":"02",
+            	"replyInfo":"您好，这篇文章这篇文章已经给出了详细解答，账单的部分收费，您可以仔细阅读一下，里面非常详细。<img src='http://g.hiphotos.baidu.com/image/pic/item/8b13632762d0f7035738fde502fa513d2697c505.jpg'/>",
+            	"replyTime":"201703140910"
+            },
+            {
+            	"replyCustType":"01",
+            	"replyInfo":"我看不懂文档怎么办？你回答下呀",
+            	"replyTime":"201703140930"
+            },
+            {
+            	"replyCustType":"02",
+            	"replyInfo":"您好，这个问题，还得靠您自己，请您谅解。",
+            	"replyTime":"201703140940"
+            }]
+        }
+    }
+}

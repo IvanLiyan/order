@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>搜索</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="AES/tripledes.js"></script>
+		<script src="AES/mode-ecb.js"></script>
+		<script src="js/app.js"></script>
+		<script src='js/jquery.min.js'></script>
+		<script src="js/rem.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/sysdict.js"></script>
+		<link rel="stylesheet" type="text/css" href="../app/css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../app/css/index.css" />
+	</head>
+
+	<body>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div class="mui-content">
+					<!--搜索框-->
+					<div id="search-wrapper">
+						<div class="mui-search">
+							<i class="icon-search"></i>
+							<input type="text" id="inpt" class="searchText" placeholder="请描述您的问题，我们帮您找答案" />
+						</div>
+						<span class="cancel">取消</span>
+					</div>
+					<!--问题列表-->
+					<ul class="mui-table-view list-wrapper"></ul>
+					<!--提示词列表-->
+					<ul class="mui-table-view title-wrapper"></ul>
+				</div>
+			</div>
+			
+			<div id="bottomTitle">
+				<span>没有找到想要的答案？</span>
+				<a>马上提问题</a>
+			</div>
+		</div>
+		<script type="text/javascript">
+			/*初始滚动条*/
+			mui('.mui-scroll-wrapper').scroll({
+				scrollY: true, //是否竖向滚动
+				scrollX: false, //是否横向滚动
+				startX: 0, //初始化时滚动至x
+				startY: 0, //初始化时滚动至y
+				indicators: true, //是否显示滚动条
+				deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+				bounce: true //是否启用回弹
+			});
+
+			/*获取滚动距离*/
+			var scrollY;
+			window.onscroll = function() {
+				var scrollDis = $('.mui-scroll').prop('style');
+				var scrollY = Math.abs(mui('.mui-scroll-wrapper').scroll().y);
+				if(scrollY >= 250) {
+					$('#bottomTitle').fadeIn();
+				} else {
+					$('#bottomTitle').fadeOut();
+				}
+			}
+
+			var listDate = [];
+			var str = "";
+			var inpt = document.getElementById("inpt");
+			var cont = document.getElementById("context");
+			inpt.addEventListener('input', function() {
+				showTitle()
+			}, false)
+
+			/*点击×清除列表*/
+			$(".searchText").click(function() {
+				str = '';
+				$('.mui-table-view').html(str).hide();
+			})
+
+			/*问题列表*/
+			function creatList() {
+				$('.list-wrapper').show();
+				var text = inpt.value;
+				var options = {
+					header: {
+						"serviceCode": "QASSearchComplete",
+						"transCode": "TC002001"
+					},
+					body: {}
+				};
+				request('http://192.168.1.33:8080/gulp/search.json', options, function(back) {
+					listDate = back.resultList;
+					if(!text) {
+						str = '';
+						$('.list-wrapper').html(str);
+					} else {
+						str = '';
+						$('.list-wrapper').html(str);
+						for(var i = 0; i < listDate.length; i++) {
+							if(listDate[i].type === '01') {
+								str += '<li class="mui-table-view-cell list" data-ordNo='+listDate[i].workOrdNo+' data-ord={"workOrdNo":"'+listDate[i].workOrdNo+'","authorId":"'+listDate[i].authorId+'","handlerId":"'+listDate[i].handlerId+'","workOrdServNo":"'+listDate[i].workOrdServNo+'","workOrdLevel":"'+listDate[i].workOrdLevel+'"}>' +
+									'<div class="list-header">' +
+									'<span id="icon"></span>' +
+									'<span class="list-title">' + listDate[i].workOrdServName + '</span>' +
+									'<span class="list-time">' + timeFormat(listDate[i].submitTime) + '</span>' +
+									'</div>' +
+									'<div class="list-disc">' + listDate[i].workOrdShortInfo + '</div>' +
+									'</li>'
+							} else {
+								str += '<li class="mui-table-view-cell list" data-ordNo='+listDate[i].workOrdNo+' data-ord={"workOrdNo":"'+listDate[i].workOrdNo+'","authorId":"'+listDate[i].authorId+'","handlerId":"'+listDate[i].handlerId+'","workOrdServNo":"'+listDate[i].workOrdServNo+'","workOrdLevel":"'+listDate[i].workOrdLevel+'"}>' +
+									'<div class="list-header">' +
+									'<span id="icon"></span>' +
+									'<span class="list-title">' + findDic("workOrderType", listDate[i].faqType) + '</span>' +
+									'<span class="list-time">' + timeFormat(listDate[i].submitTime) + '</span>' +
+									'</div>' +
+									'<div class="list-disc">' + listDate[i].faqContent + '</div>' +
+									'</li>'
+							}
+						}
+						str = changeRed(str, text);
+						$('.list-wrapper').html(str);
+					}
+				})
+			}
+
+			/*显示提示词*/
+			function showTitle() {
+				clearTimeout(titTimer);
+				var titTimer = setTimeout(function() {
+					var titText = inpt.value;
+					var options = {
+						header: {
+							"serviceCode": "QASSearchComplete",
+							"transCode": "TC002001"
+						},
+						body: {}
+					}
+					request('http://192.168.1.33:8080/gulp/searchComplete.json', options, function(back) {
+						listDate = back.completeList;
+						if(!titText) {
+							str = '';
+							$('.title-wrapper').html(str).hide();
+						} else {
+							str = '';
+							$('.title-wrapper').html(str);
+							for(var i = 0; i < listDate.length; i++) {
+								str += '<li class="mui-table-view-cell title">' + listDate[i] + '</li>'
+							}
+							str = changeRed(str, titText);
+							$('.title-wrapper').show().html(str);
+						}
+					})
+				}, 500)
+			};
+
+			/*提示词点击*/
+			$('.title-wrapper').delegate('li', 'click', function(e) {
+				inpt.value = this.innerText;
+				$('.title-wrapper').hide();
+				console.log(1);
+				creatList();
+			});
+
+			/*问题列表点击*/
+			var ordNo;
+			var ord;
+			var detailPage;
+			$('.list-wrapper').delegate('li', 'click', function(e) {
+				ord = this.dataset.ord;
+				ordNo = this.dataset.ordno;
+				if(window.jiao){
+					window.jiao.goOrderDetial(ord);
+				}else{
+					mui.openWindow({
+					   url: 'detail.html?id='+ordNo, 
+					   id:'detail'
+					});
+				}
+			})
+
+			/*格式化时间*/
+			function timeFormat(data) {
+				var yyyy = data.substr(0, 4);
+				var MM = data.substring(4, 6);
+				var dd = data.substring(6, 8);
+				var HH = data.substring(8, 10);
+				var mm = data.substring(10, 12);
+				var timeStr = yyyy + '年' + MM + '月' + dd + '日 ' + HH + ':' + mm;
+				return timeStr;
+			}
+
+			/*匹配字变红*/
+			function changeRed(string, target) {
+				var res = string.replace(new RegExp(target, 'ig'), '<i style="color: red;">' + target + '</i>');
+				return res;
+			}
+
+			/*placeholder设置*/
+			$("#inpt").focus(function() {
+				$('#inpt').prop('placeholder', '请描述您的问题，我们帮您找答案');
+			});
+			$("#inpt").blur(function() {
+				$('#inpt').prop('placeholder', '');
+			});
+
+			/*字典查询*/
+			function findDic(word, mykey) {
+				for(var i in sysdictData) {
+					if(i == word) {
+						for(var j = 0; j < i.length; j++) {
+							if(sysdictData[i][j].key == mykey) {
+								return sysdictData[i][j].value;
+							}
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

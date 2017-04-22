@@ -1,0 +1,40 @@
+{
+	"request":{
+		"workOrdNo":"110"
+	},
+    "response": {
+        "responseHeader": {
+            "serviceCode": "QASQueryWODetail",
+            "returnStatus": "1",
+            "returnCode": "1",
+            "conversationId": "9017ac4d892f4cb3dbbbb7df33de4904",
+            "systemDate": "20160812104605"
+        },
+        "responseBody": {
+        	"workOrdNo":"110",
+        	"authorId":"01",
+        	"authorName":"张晓斌",
+        	"authorCompany":"上海银湾集团",
+        	"handlerId":"02",
+        	"workOrdStatus":"01",
+        	"workOrdStateChange":"01",
+        	"workOrdType":"删除账单(小区)",
+        	"workOrdServNo":"80099",
+        	"workOrdServName":"删除账单(小区)",
+        	"workOrdInfo":"如题，怎么进行账单部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？<img src='//g.hiphotos.baidu.com/image/pic/item/8b13632762d0f7035738fde502fa513d2697c505.jpg'>",
+        	"workOrdLevel":"02",
+        	"submitTime":"201701121030",
+        	"lastReplyType":"01",
+        	"elementCount":"10",
+        	"extraCount":"4",
+        	"replayCount":"4",
+            "elementList":[
+            	{"elementName":"要素名称1","elementValue":"要素信息1要素信息1","isSecurite":"0"},
+				{"elementName":"要素名称2","elementValue":"要素信息2要素信息2要素信息2","isSecurite":"0"},
+				{"elementName":"要素名称3","elementValue":"要素信息3要素信息3要素信息3要素信息3","isSecurite":"1"}
+            ],
+            "workOrdExtraList":[]
+        }
+    }
+}
+
