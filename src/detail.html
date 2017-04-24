@@ -29,10 +29,10 @@
 	    			<ul class="replyUl"></ul>
 	    		</div>
 			</div>
-			<div class="finish">
+			<!--<div class="finish">
     			<span>问题得到解决？</span>
     			<div class="finish-btn">结束提问</div>
-    		</div>
+    		</div>-->
 		</div>
 	</div>
     
@@ -64,6 +64,7 @@
 		var showCount;
 		var lastReply;
 		var stateChange;
+		var money;
 		var options = { // 配置options
 			header: {
 				"serviceCode": "QASQueryWODetail",
@@ -86,6 +87,7 @@
 			showCount =replyCount;
 			lastReply = back.lastReplyType;
 			stateChange = back.workOrdStateChange;
+			money = Number(back.handleAmount) + Number(back.servAmount);
 			
 			/*拼接header*/
 			var headerStr = '';
@@ -93,6 +95,7 @@
 	    			'<div class="header-tit">'+
 	    				'<span class="name">'+hideName(back.authorName,userId,back.authorId,back.handlerId)+'</span>'+
 	    				'<span class="company">'+back.authorCompany+'</span>'+
+	    				'<span class="money">'+moneyFormat(money,2)+'</span>'+
 	    			'</div>'+
 	    			'<div class="header-titb">'+
 	    				'<span class="time">'+timeFormat(back.submitTime)+'</span>'+
@@ -102,7 +105,7 @@
 			
 			/*拼接headerb*/
 			var headerbStr = '';
-			headerbStr += '<span class="type">'+back.workOrdServName+'</span><span class="servNo">问题编号：'+back.workOrdServNo+'</span>'
+			headerbStr += '<span class="type">'+back.workOrdServName+'</span><span class="servNo">问题编号：'+back.workOrdServNo.slice(-6)+'</span>'
 			$('.header-b').html(headerbStr);
 			
 			/*拼接info*/
@@ -112,9 +115,9 @@
 			
 			/*拼接mess*/
 			var messStr = '';
-			if(back.elementList.length !== 0){
-				for( var i =0; i<back.elementList.length; i++){
-					messStr += '<div class="eleMess" data-isSecurite='+back.elementList[i].isSecurite+'>'+back.elementList[i].elementName+':'+back.elementList[i].elementValue+'</div>'
+			if(back.workOrdElementList.length !== 0){
+				for( var i =0; i<back.workOrdElementList.length; i++){
+					messStr += '<div class="eleMess" data-isSecurite='+back.workOrdElementList[i].isSecurite+'>'+back.workOrdElementList[i].elementName+':'+back.workOrdElementList[i].elementValue+'</div>'
 				}
 				$('.mess').html(messStr);
 				if(userId !== authorId && userId !== handlerId){
@@ -289,6 +292,18 @@
 			}
 		}
 		
+		/*格式化金额*/
+		function moneyFormat(s, n) {  // s：金额；n：保留位数
+			n = n > 0 && n <= 20 ? n : 2; 
+			s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + ""; 
+			var l = s.split(".")[0].split("").reverse(), r = s.split(".")[1]; 
+			t = ""; 
+			for (i = 0; i < l.length; i++) { 
+			t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : ""); 
+			} 
+			return '￥'+t.split("").reverse().join("") + "." + r; 
+		} 
+		
 		/*格式化时间*/
 		function timeFormat(data){
 			var yyyy = data.substr(0,4);
@@ -298,6 +313,10 @@
 			var mm = data.substring(10,12);
 			var timeStr = yyyy+'年'+MM+'月'+dd+'日 '+HH+':'+mm;
 			return timeStr;
+		}
+		
+		function numFormat(num){
+			num.slice(-6);
 		}
 		
 		/*获取当前时间*/
@@ -335,7 +354,6 @@
 		  	return obj;
 		};
 
-		
 		/*字典查询*/
 		function findDic(word,mykey){
 			for(var i in sysdictData){

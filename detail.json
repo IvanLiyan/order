@@ -18,17 +18,19 @@
         	"handlerId":"02",
         	"workOrdStatus":"01",
         	"workOrdStateChange":"01",
+        	"servAmount":"10.5",
+        	"handleAmount":"26.00",
         	"workOrdType":"删除账单(小区)",
-        	"workOrdServNo":"80099",
+        	"workOrdServNo":"8009980099800998009980099",
         	"workOrdServName":"删除账单(小区)",
-        	"workOrdInfo":"如题，怎么进行账单部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？<img src='//g.hiphotos.baidu.com/image/pic/item/8b13632762d0f7035738fde502fa513d2697c505.jpg'>",
+        	"workOrdInfo":"如题，怎么进行账单部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？如题，怎样进行账单的部分收费？<img src='//192.168.1.33:8080/gulp/src/img/infoimg.png'>",
         	"workOrdLevel":"02",
         	"submitTime":"201701121030",
         	"lastReplyType":"01",
         	"elementCount":"10",
         	"extraCount":"4",
         	"replayCount":"4",
-            "elementList":[
+            "workOrdElementList":[
             	{"elementName":"要素名称1","elementValue":"要素信息1要素信息1","isSecurite":"0"},
 				{"elementName":"要素名称2","elementValue":"要素信息2要素信息2要素信息2","isSecurite":"0"},
 				{"elementName":"要素名称3","elementValue":"要素信息3要素信息3要素信息3要素信息3","isSecurite":"1"}
